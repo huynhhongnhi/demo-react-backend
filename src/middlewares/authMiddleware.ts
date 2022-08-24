@@ -12,20 +12,22 @@ const isAuth = async (req: RequestWithUserRole, res: Response, next: NextFunctio
 
     const response: { code?: number, message?: string } = {};
     let code = HTTP_CODE_UNAUTHORIZED;
-    let access =  req.headers["x-access-token"] || req.headers["authorization"] || req.query.token || req.body.token
+    let token =  req.headers["x-access-token"] || req.headers["authorization"] || req.query.token || req.body.token
 
     try {
-        if ( !access ) {
+        if ( !token ) {
             code = HTTP_CODE_FORBIDDEN;
             throw new Error('Unauthorized!!!');
         }
 
-        access = access.replace('Bearer ','');
+        const access: any = req.headers.authorization;
         const user = await jwt.verify( access, secret );
         req.user = user;
+
         next(); 
     } catch (error) {
-        response.code             = code || HTTP_CODE_UNAUTHORIZED
+        console.log(error)
+        response.code             = code || 500
         response.message          = (error as Error).message || 'Unauthorized.'
         return res.status(response.code).json(response);
     }

@@ -9,6 +9,7 @@
  import apiRoutes from './routes/apiRoutes'
  import { connect } from './configs/database';
  const { createProxyMiddleware } = require('http-proxy-middleware');
+ const bodyParser = require('body-parser');
 
  dotenv.config();
 
@@ -29,7 +30,10 @@ if (!process.env.PORT) {
  /**
  *  App Configuration
  */
-
+  app.use( bodyParser.json() );       // to support JSON-encoded bodies
+  app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+  }));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());

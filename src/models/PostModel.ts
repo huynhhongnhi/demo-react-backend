@@ -3,6 +3,7 @@ import mongoose, { Schema, model } from 'mongoose';
 export interface IPost extends Document {
     title: string;
     description: string;
+    image: string;
   }
 
 // Create post schema
@@ -15,6 +16,11 @@ const PostSchema = new Schema(
         description: {
             type: String,
             required: true
+        },
+        image: {
+            type: String,
+            required: true,
+            default: null
         }
     },
     { timestamps: true, versionKey: false }

@@ -1,8 +1,9 @@
 import PostModel from '../models/PostModel';
 
 interface PostInterface {
-    title: number,
-    description: number
+    title: string,
+    description: string,
+    image: string
 }
 
 class PostService {
@@ -11,13 +12,11 @@ class PostService {
         limit: number,
         skip: number
     ) {
-        console.log(limit)
-        console.log(skip)
-        return PostModel.find().select(`_id title description`).limit(limit).skip(skip).sort({ "_id": -1 });
+        return PostModel.find().select(`_id title description, image`).limit(limit).skip(skip).sort({ "_id": -1 });
     };
 
-    public add( { title, description }: PostInterface) {
-        const post = new PostModel({ title, description });
+    public add( { title, description, image }: PostInterface) {
+        const post = new PostModel({ title, description, image });
         const add = post.save();
         return add;
     };

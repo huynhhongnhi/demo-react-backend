@@ -3,6 +3,13 @@ import { HTTP_CODE_ERROR, HTTP_CODE_SUSSCESS } from "../lib/constant";
 import { postService } from '../services/PostService';
 import { Response, Request } from "express";
 
+interface RequestWithUserRole extends Request {
+    file: {
+        path: string,
+        mimetype: string
+    }
+} 
+
 // all
 const getAll = async (req: Request, res: Response) => {
     try {
@@ -18,8 +25,15 @@ const getAll = async (req: Request, res: Response) => {
 // create
 const addPost = async (req: Request, res: Response) => {        
     try {
-        const { title, description } = req.body;
-        const fetch = await postService.add({ title, description });
+        const { title, description, file } = req.body;
+        const base64Data = file.replace(/^data:image\/png;base64,/, "");
+        const image = Date.now() + '.png';
+
+        require("fs").writeFile(image, base64Data, 'base64', function(err: any) {
+            console.log(err);
+        });
+
+        const fetch = await postService.add({ title, description, image });
         resSuccess(HTTP_CODE_SUSSCESS, fetch, res);
     } catch (error) {
         resError(HTTP_CODE_ERROR, (error as Error).message, (error as Error), res);

@@ -38,8 +38,8 @@ const loginAuth = async (req: Request, res: Response) => {
 }
 
 const registerAuth = async (req: Request, res: Response) => {
+
     let code = HTTP_CODE_ERROR;
-    
     try {
         const {email, password, username} = req.body;
         const isExist = await userService.getFindUser({ email });
@@ -47,11 +47,11 @@ const registerAuth = async (req: Request, res: Response) => {
             code = 409;
             throw new Error('Email exist!');
         }
-
+        console.log({ email, password, username })
         const user = await userService.create({ email, password, username });
         return resSuccess(HTTP_CODE_SUSSCESS, user.toResources(), res);
-    } catch (error) {
-        return resError(code || HTTP_CODE_ERROR, (error as Error).message, (error as Error), res);
+    } catch (error: any) {
+        resError(code || 500, error.message, error, res);
     }
 };
 
