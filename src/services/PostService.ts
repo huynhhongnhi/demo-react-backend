@@ -1,4 +1,7 @@
 import PostModel from '../models/PostModel';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 interface PostInterface {
     title: string,
@@ -12,7 +15,7 @@ class PostService {
         limit: number,
         skip: number
     ) {
-        return PostModel.find().select(`_id title description, image`).limit(limit).skip(skip).sort({ "_id": -1 });
+        return PostModel.find().select(`_id title description image`).limit(limit).skip(skip).sort({ "_id": -1 });
     };
 
     public add( { title, description, image }: PostInterface) {

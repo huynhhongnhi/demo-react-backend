@@ -10,6 +10,7 @@
  import { connect } from './configs/database';
  const { createProxyMiddleware } = require('http-proxy-middleware');
  const bodyParser = require('body-parser');
+ const path = require("path");
 
  dotenv.config();
 
@@ -34,11 +35,12 @@ if (!process.env.PORT) {
   app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
   }));
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
-
-
+  app.use(helmet());
+  app.use(cors());
+  app.use(express.json());
+  app.use(express.static('public')); 
+  app.use('/images', express.static('images'));
+  app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 /**
  * Router

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 const jwt = require('jsonwebtoken');
 import { HTTP_CODE_UNAUTHORIZED, HTTP_CODE_FORBIDDEN } from '../lib/constant'
 
-const secret = process.env.JWT_SECRET || 'jsonwebtoken-secret';
+const secret = 'jsonwebtoken-secret';
 
 interface RequestWithUserRole extends Request {
     user?: any,
@@ -13,7 +13,7 @@ const isAuth = async (req: RequestWithUserRole, res: Response, next: NextFunctio
     const response: { code?: number, message?: string } = {};
     let code = HTTP_CODE_UNAUTHORIZED;
     let token =  req.headers["x-access-token"] || req.headers["authorization"] || req.query.token || req.body.token
-
+    
     try {
         if ( !token ) {
             code = HTTP_CODE_FORBIDDEN;
@@ -21,6 +21,9 @@ const isAuth = async (req: RequestWithUserRole, res: Response, next: NextFunctio
         }
 
         const access: any = req.headers.authorization;
+        console.log('---------------')
+        console.log(access, secret)
+        console.log('---------------')
         const user = await jwt.verify( access, secret );
         req.user = user;
 

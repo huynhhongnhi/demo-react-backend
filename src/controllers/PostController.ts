@@ -2,6 +2,9 @@ import { resError, resSuccess } from "../commons/responseJson";
 import { HTTP_CODE_ERROR, HTTP_CODE_SUSSCESS } from "../lib/constant";
 import { postService } from '../services/PostService';
 import { Response, Request } from "express";
+import console from "console";
+const fs = require('fs');
+const path = require('path');
 
 interface RequestWithUserRole extends Request {
     file: {
@@ -16,7 +19,22 @@ const getAll = async (req: Request, res: Response) => {
         const page = (req.query.skip) ? req.query.skip : 0;
         const limit = (req.query.limit) ? req.query.limit : 6;
         const fetch = await postService.getAll(Number(limit), Number(page));
-        resSuccess(HTTP_CODE_SUSSCESS, fetch, res);
+    
+        let results = [];
+        Object.keys(fetch).map( (key) => {
+            let image = null
+            if (fetch[key]['image']) {
+                image = process.env.URL_API + process.env.PATH_IMAGE + fetch[key]['image']
+            }
+            results.push({
+                _id: fetch[key]['_id'],
+                title: fetch[key]['title'],
+                description: fetch[key]['description'],
+                image
+            })
+        });
+        
+        resSuccess(HTTP_CODE_SUSSCESS, results, res);
     } catch (error) {;
         resError(HTTP_CODE_ERROR, (error as Error).message, (error as Error), res);
     }
@@ -26,12 +44,17 @@ const getAll = async (req: Request, res: Response) => {
 const addPost = async (req: Request, res: Response) => {        
     try {
         const { title, description, file } = req.body;
-        const base64Data = file.replace(/^data:image\/png;base64,/, "");
-        const image = Date.now() + '.png';
-
-        require("fs").writeFile(image, base64Data, 'base64', function(err: any) {
-            console.log(err);
-        });
+        let image = null;
+        if ( file ) {
+            console.log('-------------')
+            const base64Data = file.replace(/^data:image\/png;base64,/, "");
+            console.log(file.split(',')[1])
+            console.log('-------------')
+            image = Date.now() + '.png';
+            fs.writeFile(`${__dirname}/../../public/images` + image, base64Data, 'base64', function(err: any) {
+                console.log(err);
+            });
+        }
 
         const fetch = await postService.add({ title, description, image });
         resSuccess(HTTP_CODE_SUSSCESS, fetch, res);

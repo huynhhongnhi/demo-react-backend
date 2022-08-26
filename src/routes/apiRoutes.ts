@@ -14,7 +14,7 @@ router.get('/me', [ isAuth ], userController.getUser)
 // posts
 router.get('/posts', PostController.getAll);
 router.get('/posts/:postId', PostController.detailPost);
-router.post('/posts', PostController.addPost);
+router.post('/posts', [ isAuth ], PostController.addPost);
 router.delete('/posts/:postId', [ isAuth ], PostController.deletePost)
 router.patch('/posts/:postId', [ isAuth ], PostController.updatePost)
 
