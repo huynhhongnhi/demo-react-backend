@@ -43,15 +43,13 @@ const getAll = async (req: Request, res: Response) => {
 // create
 const addPost = async (req: Request, res: Response) => {        
     try {
-        const { title, description, file } = req.body;
+        const { title, description, attachments } = req.body;
         let image = null;
-        if ( file ) {
-            console.log('-------------')
-            const base64Data = file.replace(/^data:image\/png;base64,/, "");
-            console.log(file.split(',')[1])
-            console.log('-------------')
-            image = Date.now() + '.png';
-            fs.writeFile(`${__dirname}/../../public/images` + image, base64Data, 'base64', function(err: any) {
+        if ( attachments ) {
+            console.log()
+            const base64Data = attachments.imageBase64.split(',');;
+            image = Date.now() + '.' + attachments.extension;
+            fs.writeFile(`${__dirname}/../../public/images` + image, base64Data[1], 'base64', function(err: any) {
                 console.log(err);
             });
         }
