@@ -31,9 +31,10 @@ if (!process.env.PORT) {
  /**
  *  App Configuration
  */
-  app.use( bodyParser.json() );       // to support JSON-encoded bodies
+  app.use( bodyParser.json({limit: '50mb'}) );       // to support JSON-encoded bodies
   app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-    extended: true
+    extended: true,
+    limit: '50mb'
   }));
   app.use(helmet());
   app.use(cors());

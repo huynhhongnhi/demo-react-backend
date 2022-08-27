@@ -47,11 +47,14 @@ const registerAuth = async (req: Request, res: Response) => {
             code = 409;
             throw new Error('Email exist!');
         }
-        console.log({ email, password, username })
+        
         const user = await userService.create({ email, password, username });
-        return resSuccess(HTTP_CODE_SUSSCESS, user.toResources(), res);
+        const strJWT = await authHelper.hashTokenAccess(user.toResources())
+        let formatData = user.toResources();
+        formatData.token = strJWT;
+        return resSuccess(HTTP_CODE_SUSSCESS, formatData, res);
     } catch (error: any) {
-        resError(code || 500, error.message, error, res);
+        resError(code || HTTP_CODE_ERROR, (error as Error).message, (error as Error), res, code);
     }
 };
 

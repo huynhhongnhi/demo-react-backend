@@ -3,6 +3,7 @@ import { HTTP_CODE_ERROR, HTTP_CODE_SUSSCESS } from "../lib/constant";
 import { postService } from '../services/PostService';
 import { Response, Request } from "express";
 import console from "console";
+import { ObjectId } from "mongodb";
 const fs = require('fs');
 const path = require('path');
 
@@ -20,16 +21,16 @@ const getAll = async (req: Request, res: Response) => {
         const limit = (req.query.limit) ? req.query.limit : 6;
         const fetch = await postService.getAll(Number(limit), Number(page));
     
-        let results = [];
-        Object.keys(fetch).map( (key) => {
-            let image = null
-            if (fetch[key]['image']) {
-                image = process.env.URL_API + process.env.PATH_IMAGE + fetch[key]['image']
+        let results: { _id: ObjectId, title: string, description: string, image: string }[] = [];
+        fetch.map( post => {
+            let image = ""
+            if ( post.image ) {
+                image = 'http://localhost:7000/images' + post.image
             }
             results.push({
-                _id: fetch[key]['_id'],
-                title: fetch[key]['title'],
-                description: fetch[key]['description'],
+                _id: post._id,
+                title: post.title,
+                description: post.description,
                 image
             })
         });
@@ -44,9 +45,8 @@ const getAll = async (req: Request, res: Response) => {
 const addPost = async (req: Request, res: Response) => {        
     try {
         const { title, description, attachments } = req.body;
-        let image = null;
+        let image = "";
         if ( attachments ) {
-            console.log()
             const base64Data = attachments.imageBase64.split(',');;
             image = Date.now() + '.' + attachments.extension;
             fs.writeFile(`${__dirname}/../../public/images` + image, base64Data[1], 'base64', function(err: any) {

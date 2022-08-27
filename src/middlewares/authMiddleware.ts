@@ -21,9 +21,6 @@ const isAuth = async (req: RequestWithUserRole, res: Response, next: NextFunctio
         }
 
         const access: any = req.headers.authorization;
-        console.log('---------------')
-        console.log(access, secret)
-        console.log('---------------')
         const user = await jwt.verify( access, secret );
         req.user = user;
 
